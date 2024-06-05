@@ -231,7 +231,7 @@ function QuickSearchToolbar() {
         <Stack direction="row" spacing={2} sx={{ mb: 1 }}>
           <Box sx={{
             width: 575,
-            height: 56.25,
+            height: 56,
             borderRadius: 1,
             border: '1px solid #E28B95'
           }}>
@@ -259,7 +259,7 @@ function QuickSearchToolbar() {
             </Divider>
           </Box>
           <React.Fragment>
-            <Button id="addTool" variant="outlined" onClick={handleClickOpenAdd} color="error">
+            <Button id="addTool" variant="outlined" onClick={handleClickOpenAdd} color="error" sx={{height: 56}}>
               Add Order
             </Button>
             <Dialog
@@ -320,11 +320,11 @@ function QuickSearchToolbar() {
                 </DialogActions>
             </Dialog>
             </React.Fragment>
-              <Button id="deleteTool" variant="outlined" onClick={handleDeleteRow} color="error">
+              <Button id="deleteTool" variant="outlined" onClick={handleDeleteRow} color="error" sx={{height: 56}}>
                 Delete Order
               </Button>
             <React.Fragment>
-              <Button id="modifyTool" variant="outlined" onClick={handleClickOpenModify} color="error">
+              <Button id="modifyTool" variant="outlined" onClick={handleClickOpenModify} color="error" sx={{height: 56}}>
                 Modify Order
               </Button>
               <Dialog
