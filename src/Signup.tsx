@@ -47,6 +47,7 @@ function Signup (props : IProps) {
             logger(true);
             return response;
           });
+          console.log(response);
           setOpen(true);
         }
         setOpen(true);

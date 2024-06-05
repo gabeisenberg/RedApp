@@ -42,6 +42,7 @@ useEffect(() => {
           .catch((error) => console.error(error));
         console.log(data);
         const body = await response.json();
+        console.log(body, setSearch);
     }
     else {
       const response: any = await fetch("http://localhost:5211/api/Order")
@@ -72,7 +73,12 @@ useEffect(() => {
     setOpenModify(false);
   };
 
-  const numToType = (num) => {
+  interface numProps {
+    num: any
+  }
+
+  const numToType = (props : numProps) => {
+    const {num} = props;
     if (num == 0) {
       return 'Standard';
     }
@@ -94,7 +100,12 @@ useEffect(() => {
     console.log('Conversion error');
   }
 
-  const typeToNum = (type) => {
+  interface typeProps {
+    type: any
+  }
+
+  const typeToNum = (props : typeProps) => {
+    const {type} = props;
     if (type == 'Standard') {
       return 0;
     }
@@ -116,7 +127,13 @@ useEffect(() => {
     console.log('Conversion error');
   }
 
-  const handleAddSubmit = async (name, type) => {
+interface addSubmitProps {
+  name: any,
+  type: any
+}
+
+  async function handleAddSubmit (props : addSubmitProps) {
+    const {name, type} = props;
     try {
     //make post http call with name and type
     console.log(name, 'name test');
@@ -161,16 +178,24 @@ useEffect(() => {
           'Content-Type': 'application/json',
         },
       });
-      if (!response.ok) {
-        console.log('errrorrr');
-      }
+      console.log(response);
+      // if (!response.ok) {
+      //   console.log('errrorrr');
+      // }
     });
     //window.location.reload();
     setFetcher(fetcher + 1);
     }
   };
 
-  const handleModifyRow = (id, name, type) => {
+  interface modifySubmitProps {
+    id: any,
+    name: any,
+    type: any
+  }
+
+  function handleModifyRow (props : modifySubmitProps) {
+    const {id, name, type} = props;
     console.log(id, name, type);
     const orderType = parseInt(type);
     const response = fetch(`http://localhost:5211/api/Order/${id}`, {
@@ -194,7 +219,12 @@ useEffect(() => {
       });
   }
 
-  const handleFilterRow = (e) => {
+  interface filterProps {
+    e: any
+  }
+
+  const handleFilterRow = (props : filterProps) => {
+    const {e} = props;
     setFilter(e.target.value);
     //console.log(filter);
     console.log(e.target.value);
@@ -273,7 +303,7 @@ function QuickSearchToolbar() {
                   const formJson = Object.fromEntries((formData as any).entries());
                   const name = formJson.orderName;
                   const type = typeToNum(formJson.orderType);
-                  handleAddSubmit(name, type);
+                  handleAddSubmit({name, type});
                   handleCloseAdd();
                 },
               }}
@@ -316,7 +346,7 @@ function QuickSearchToolbar() {
                 </DialogContent>
                 <DialogActions>
                   <Button onClick={handleCloseAdd} color="error">Cancel</Button>
-                  <Button type="submit" onSubmit={handleAddSubmit} color="error">Submit</Button>
+                  <Button type="submit" color="error">Submit</Button>
                 </DialogActions>
             </Dialog>
             </React.Fragment>
@@ -339,7 +369,7 @@ function QuickSearchToolbar() {
                     const id = formJson.orderId;
                     const name = formJson.orderName;
                     const type = typeToNum(formJson.orderType);
-                    handleModifyRow(id, name, type);
+                    handleModifyRow({id, name, type});
                     handleCloseModify();
                   },
                 }}
@@ -385,7 +415,7 @@ function QuickSearchToolbar() {
                   </DialogContent>
                   <DialogActions>
                     <Button onClick={handleCloseModify} color="error">Cancel</Button>
-                    <Button type="submit" onSubmit={handleAddSubmit} color="error">Submit</Button>
+                    <Button type="submit" color="error">Submit</Button>
                   </DialogActions>
             </Dialog>
             </React.Fragment>
@@ -396,7 +426,7 @@ function QuickSearchToolbar() {
                 id="demo-simple-select"
                 value={filter}
                 label="Order Type"
-                onChange={handleFilterRow}
+                onChange={() => {handleFilterRow}}
               >
                 <MenuItem value={0}>Standard</MenuItem>
                 <MenuItem value={1}>Sale</MenuItem>
@@ -420,11 +450,16 @@ function QuickSearchToolbar() {
     { field: "createdDate", headerName: "Date Created", width: 250 },
   ];
 
-  var convertedData = null;
-  if (!(data == null || data.length == 0)) {
-    convertedData = data.map(obj => {
-      return { ...obj, orderType: numToType(parseInt(obj.orderType)) };
-    });
+  try {
+    var convertedData = null;
+    if (!(data == null || data.length == 0)) {
+      convertedData = data.map(obj => {
+        return { ...obj, orderType: numToType(parseInt(obj.orderType)) };
+      });
+    }
+  }
+  catch (error) {
+    console.log(error);
   }
 
   return (
@@ -453,7 +488,12 @@ function QuickSearchToolbar() {
               disableRowSelectionOnClick
               onRowSelectionModelChange={(ids) => {
                 //console.log(ids);
-                setSelections(ids);
+                try {
+                  setSelections(ids);
+                }
+                catch(error) {
+                  console.log(error);
+                }
               }}
             ></DataGrid>
         </Box>

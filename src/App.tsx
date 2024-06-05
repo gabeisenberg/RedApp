@@ -2,13 +2,11 @@ import Table from "./Table"
 import AppHeader from "./AppHeader"
 import Login from "./Login"
 import Signup from "./Signup"
-import { List, ListItem, Box, Drawer, Button, Container, Typography, Stack, Divider, styled, Switch, FormControlLabel, Collapse, useMediaQuery, createTheme, CssBaseline, FormGroup } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { List, ListItem, Box, Drawer, Button, Container, Typography, Stack, Divider, Collapse, useMediaQuery, createTheme, CssBaseline} from "@mui/material";
+import { useEffect, useState } from "react";
 import "./styles/AppHeader.css"
 import logo from "./styles/logo.jpeg"
-import { useTheme } from "@mui/material/styles";
 import { ThemeProvider } from "@emotion/react";
-import { dark } from "@mui/material/styles/createPalette";
 
 function App() {
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -20,7 +18,11 @@ function App() {
   const darkTheme = createTheme({
     breakpoints: {
       values: {
-        md: 1595
+        xs: 10,
+        sm: 10,
+        md: 1595,
+        lg: 2000,
+        xl: 2000
       },
     },
     palette: {
@@ -34,7 +36,11 @@ function App() {
   const lightTheme = createTheme({
     breakpoints: {
       values: {
-        md: 1595
+        xs: 10,
+        sm: 10,
+        md: 1595,
+        lg: 2000,
+        xl: 2000
       },
     },
     palette: {
@@ -95,7 +101,7 @@ function App() {
           </ListItem>
           <ListItem>
             <Typography style={{color: isDark ? 'white' : 'black'}}>
-              Username: {user.userName}
+              Username: { user.userName }
             </Typography>
           </ListItem>
           <ListItem>

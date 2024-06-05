@@ -3,13 +3,15 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import SettingsIcon from '@mui/icons-material/Settings';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { List, ListItem, Box, Drawer } from "@mui/material";
-import React, { useEffect, useState } from "react";
 import "./styles/AppHeader.css"
 
-export default function AppHeader({handleClick, handleLoginClick}) {
-  const [loggedIn, setLoggedIn] = useState(false);
+interface IProps {
+  handleClick: any,
+  handleLoginClick: any
+}
 
+export default function AppHeader(props : IProps) {
+  const {handleClick, handleLoginClick} = props;
   const LoginInfo = () => {
     return (
       <IconButton size="large" sx={{top: 0, right: 0}} onClick={() => {

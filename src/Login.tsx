@@ -12,8 +12,6 @@ function Login (props : IProps) {
 
     const [userName, setUserName] = useState("");
     const [password, setPassword] = useState("");
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
     const [open, setOpen] = useState(false);
 
     async function handleLogInSubmit() {
@@ -50,6 +48,7 @@ function Login (props : IProps) {
             setOpen(true);
             console.log(error, userName, password);
         });
+        console.log(response);
     }
 
     return (
