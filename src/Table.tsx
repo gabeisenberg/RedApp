@@ -1,6 +1,6 @@
 import "./styles/Table.css";
 import React, { useEffect, useState } from "react";
-import { DataGrid, GridToolbarQuickFilter,  } from "@mui/x-data-grid";
+import { DataGrid, GridRowId, GridToolbarQuickFilter,  } from "@mui/x-data-grid";
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import FormControl from '@mui/material/FormControl';
@@ -23,11 +23,11 @@ interface IProps {
 
 const Table = (props : IProps) => {
   const {firstName, lastName} = props;
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<[] | null>(null);
   const [search, setSearch] = useState("");
   const [openAdd, setOpenAdd] = React.useState(false);
   const [openModify, setOpenModify] = React.useState(false);
-  const [selections, setSelections] = useState([]);
+  const [selections, setSelections] = useState<GridRowId[] | null>([]);
   const [filter, setFilter] = useState(null);
   const [fetcher, setFetcher] = useState(0);
   const [open, setOpen] = useState(false);
@@ -42,7 +42,7 @@ useEffect(() => {
           .catch((error) => console.error(error));
         console.log(data);
         const body = await response.json();
-        console.log(body, setSearch);
+        console.log(body);
     }
     else {
       const response: any = await fetch("http://localhost:5211/api/Order")
@@ -51,6 +51,7 @@ useEffect(() => {
           .catch((error) => console.error(error));
         console.log(data);
         const body = await response.json();
+        console.log(body, setSearch);
     }
     window.location.reload();
   };
@@ -73,12 +74,7 @@ useEffect(() => {
     setOpenModify(false);
   };
 
-  interface numProps {
-    num: any
-  }
-
-  const numToType = (props : numProps) => {
-    const {num} = props;
+  const numToType = (num : any) => {
     if (num == 0) {
       return 'Standard';
     }
@@ -100,12 +96,7 @@ useEffect(() => {
     console.log('Conversion error');
   }
 
-  interface typeProps {
-    type: any
-  }
-
-  const typeToNum = (props : typeProps) => {
-    const {type} = props;
+  const typeToNum = (type : any) => {
     if (type == 'Standard') {
       return 0;
     }
@@ -127,13 +118,7 @@ useEffect(() => {
     console.log('Conversion error');
   }
 
-interface addSubmitProps {
-  name: any,
-  type: any
-}
-
-  async function handleAddSubmit (props : addSubmitProps) {
-    const {name, type} = props;
+  const handleAddSubmit = async (name : any, type : any) => {
     try {
     //make post http call with name and type
     console.log(name, 'name test');
@@ -166,11 +151,11 @@ interface addSubmitProps {
   }
 
   const handleDeleteRow = () => {
-    if (selections.length == 0) {
+    if (selections != null && selections.length == 0) {
       console.log('EMPTY CANNOT DELETE');
       setOpen(true);
     }
-    else {
+    else if (selections != null) {
       selections.map(id => {
         const response = fetch(`http://localhost:5211/api/Order/${id}`, {
         method: 'DELETE',
@@ -188,14 +173,7 @@ interface addSubmitProps {
     }
   };
 
-  interface modifySubmitProps {
-    id: any,
-    name: any,
-    type: any
-  }
-
-  function handleModifyRow (props : modifySubmitProps) {
-    const {id, name, type} = props;
+  const handleModifyRow = (id : any, name : any, type : any) => {
     console.log(id, name, type);
     const orderType = parseInt(type);
     const response = fetch(`http://localhost:5211/api/Order/${id}`, {
@@ -217,14 +195,10 @@ interface addSubmitProps {
           console.log(response.status);
         }
       });
+      console.log(response);
   }
 
-  interface filterProps {
-    e: any
-  }
-
-  const handleFilterRow = (props : filterProps) => {
-    const {e} = props;
+  const handleFilterRow = (e : any) => {
     setFilter(e.target.value);
     //console.log(filter);
     console.log(e.target.value);
@@ -303,7 +277,7 @@ function QuickSearchToolbar() {
                   const formJson = Object.fromEntries((formData as any).entries());
                   const name = formJson.orderName;
                   const type = typeToNum(formJson.orderType);
-                  handleAddSubmit({name, type});
+                  handleAddSubmit(name, type);
                   handleCloseAdd();
                 },
               }}
@@ -369,7 +343,7 @@ function QuickSearchToolbar() {
                     const id = formJson.orderId;
                     const name = formJson.orderName;
                     const type = typeToNum(formJson.orderType);
-                    handleModifyRow({id, name, type});
+                    handleModifyRow(id, name, type);
                     handleCloseModify();
                   },
                 }}
@@ -426,7 +400,7 @@ function QuickSearchToolbar() {
                 id="demo-simple-select"
                 value={filter}
                 label="Order Type"
-                onChange={() => {handleFilterRow}}
+                onChange={handleFilterRow}
               >
                 <MenuItem value={0}>Standard</MenuItem>
                 <MenuItem value={1}>Sale</MenuItem>
@@ -450,16 +424,28 @@ function QuickSearchToolbar() {
     { field: "createdDate", headerName: "Date Created", width: 250 },
   ];
 
-  try {
-    var convertedData = null;
-    if (!(data == null || data.length == 0)) {
-      convertedData = data.map(obj => {
-        return { ...obj, orderType: numToType(parseInt(obj.orderType)) };
-      });
-    }
+  interface OrderObject {
+    createdDate: any;
+    customerName: any;
+    id: any;
+    orderType: string | undefined;
+    orderedBy: any;
   }
-  catch (error) {
-    console.log(error);
+
+  var convertedData : OrderObject[] | null = null;
+  if (!(data == null || data.length == 0)) {
+    convertedData = data.map((obj : OrderObject) => {
+      console.log(obj.orderType);
+        if (typeof obj.orderType === 'string') {
+          return { ...obj, orderType: numToType(parseInt(obj.orderType)) };
+        }
+        else if (typeof obj.orderType === 'number') {
+          return { ...obj, orderType: numToType(obj.orderType) };
+        }
+        else {
+          return { ...obj, orderType: numToType('0') };
+        }
+    });
   }
 
   return (
@@ -488,12 +474,7 @@ function QuickSearchToolbar() {
               disableRowSelectionOnClick
               onRowSelectionModelChange={(ids) => {
                 //console.log(ids);
-                try {
-                  setSelections(ids);
-                }
-                catch(error) {
-                  console.log(error);
-                }
+                setSelections(ids);
               }}
             ></DataGrid>
         </Box>

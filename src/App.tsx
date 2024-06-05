@@ -2,27 +2,36 @@ import Table from "./Table"
 import AppHeader from "./AppHeader"
 import Login from "./Login"
 import Signup from "./Signup"
-import { List, ListItem, Box, Drawer, Button, Container, Typography, Stack, Divider, Collapse, useMediaQuery, createTheme, CssBaseline} from "@mui/material";
+import { List, ListItem, Box, Drawer, Button, Container, Typography, Stack, Divider, Collapse, useMediaQuery, createTheme, CssBaseline } from "@mui/material";
 import { useEffect, useState } from "react";
 import "./styles/AppHeader.css"
 import logo from "./styles/logo.jpeg"
 import { ThemeProvider } from "@emotion/react";
 
 function App() {
+
+  interface UserObject {
+    id: any;
+    userName: any;
+    firstName: any;
+    lastName: any;
+    passWord: any;
+  }
+
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openLoginDrawer, setOpenLoginDrawer] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<null | UserObject>(null);
   const [isDark, setIsDark] = useState(false);
 
   const darkTheme = createTheme({
     breakpoints: {
       values: {
         xs: 10,
-        sm: 10,
+        sm: 1000,
         md: 1595,
         lg: 2000,
-        xl: 2000
+        xl: 3000
       },
     },
     palette: {
@@ -37,10 +46,10 @@ function App() {
     breakpoints: {
       values: {
         xs: 10,
-        sm: 10,
+        sm: 1000,
         md: 1595,
         lg: 2000,
-        xl: 2000
+        xl: 3000
       },
     },
     palette: {
@@ -101,7 +110,7 @@ function App() {
           </ListItem>
           <ListItem>
             <Typography style={{color: isDark ? 'white' : 'black'}}>
-              Username: { user.userName }
+              Username: {user.userName}
             </Typography>
           </ListItem>
           <ListItem>
@@ -146,7 +155,7 @@ function App() {
   }
 
   const Main = () => {
-    if (loggedIn) {
+    if (loggedIn && user != null) {
       return ( <> 
         <Drawer open={openDrawer} anchor='right' PaperProps={{sx:{width: 200}}}>
           <SettingsDrawer/>
